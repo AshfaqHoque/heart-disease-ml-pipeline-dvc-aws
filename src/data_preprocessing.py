@@ -62,7 +62,7 @@ def preprocess_df(df, is_train=True):
     except Exception as e:
         logger.error('Error during standardization: %s', e)
         raise
-    
+
 def main():
     """
     Main function to load raw data, preprocess it, and save the processed data.

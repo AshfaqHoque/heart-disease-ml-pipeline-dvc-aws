@@ -4,7 +4,7 @@ import pandas as pd
 import pickle
 import logging
 from sklearn.tree import DecisionTreeClassifier
-
+import yaml
 
 #making a log directory(only 1 time)
 log_dir = 'logs'
@@ -26,6 +26,23 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+
+def load_params(params_path: str) -> dict:
+    """Load parameters from a YAML file."""
+    try:
+        with open(params_path, 'r') as file:
+            params = yaml.safe_load(file)
+        logger.debug('Parameters retrieved from %s', params_path)
+        return params
+    except FileNotFoundError:
+        logger.error('File not found: %s', params_path)
+        raise
+    except yaml.YAMLError as e:
+        logger.error('YAML error: %s', e)
+        raise
+    except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
 
 def load_data(file_path: str) -> pd.DataFrame:
     """
@@ -104,16 +121,10 @@ def save_model(model, file_path: str) -> None:
 
 def main():
     try:
-        params = {
-            'random_state': 42,
-            'max_depth': 5,
-            'min_samples_split': 10
-        }
+        params = load_params('params.yaml')['model_building']
         train_data = load_data('./data/interim/train_processed.csv')
         X_train = train_data.drop(columns='target').to_numpy()
         y_train = train_data['target'].to_numpy()
-        # X_train = train_data.iloc[:, :-1].values
-        # y_train = train_data.iloc[:, -1].values
 
         clf = train_model(X_train, y_train, params)
         

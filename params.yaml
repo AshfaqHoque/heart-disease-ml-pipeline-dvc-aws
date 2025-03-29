@@ -1,0 +1,7 @@
+data_ingestion:
+  test_size: 0.2
+
+model_building:
+  random_state: 42
+  max_depth: 5
+  min_samples_split: 10
